@@ -67,7 +67,7 @@ if "loaded" in st.session_state:
             st.button(
                 "Generate a population",
                 on_click=click_button_generate,
-                disabled=st.session_state.generated,
+                disabled=st.session_state.generated_evolution,
             )
         size = st.slider("Choose size of population", 1, 100, 50)
         st.session_state.size = size
