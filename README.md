@@ -6,4 +6,4 @@ of *Genetics Algorithms*.
 
 Follow along [here](https://emilien-foissotte.github.io/fr/posts/2023/10/genetic-algorithm/?utm_campaign=GAGithub)"
 
-See the deployed version of the app [there]()
+See the deployed version of the app [there](https://ml-genetic-algorithms.streamlit.app)
