@@ -30,7 +30,8 @@ st.divider()
 
 st.write(
     "Deep dive using tabs on the left, read more about following my blog"
-    "post available [here](https://emilien-foissotte.github.io/fr/posts/"
+    "post available [here in french](https://emilien-foissotte.github.io/fr/posts/"
+    "2023/10/genetic-algorithm/?utm_campaign=GAWebApp) or [here in english](https://emilien-foissotte.github.io/posts/"
     "2023/10/genetic-algorithm/?utm_campaign=GAWebApp)"
 )
 
