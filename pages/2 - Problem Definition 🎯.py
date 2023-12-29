@@ -107,7 +107,7 @@ if "loaded" in st.session_state:
             for cell in st.session_state.problem["capacity"].keys():
                 if cell != "courtyard":
                     cell_capacity += st.session_state.problem["capacity"][cell]
-            st.metric(label="Max cells capacity", value=st.session_state.max_capa)
+            st.metric(label="Max cells capacity", value=cell_capacity)
 
             st.write("Json representation :")
             st.write(st.session_state.problem)
