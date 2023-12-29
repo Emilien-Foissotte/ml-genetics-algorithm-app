@@ -1,8 +1,6 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 
-from toolkit import problem, state_generator
+from toolkit import state_generator
 
 
 def on_click_reset():
@@ -10,7 +8,7 @@ def on_click_reset():
 
 
 st.set_page_config(
-    page_title="Home 🏠",
+    page_title="🧬 Algorithms",
 )
 st.title("Demonstration of Genetics Algorithms")
 
@@ -18,24 +16,26 @@ st.title("Demonstration of Genetics Algorithms")
 st.markdown(
     """
 This webpage is a demonstration of use of Genetics Algorithms.  \n  \n
-The goal is : 
-- To maximize the number of **prisoners** under custody 👤 \n
-\n
+The goal is :
+- To maximize the number of **prisoners** under custody 👤 \n \n
 Knowing that :
 - Prisoners are gathered in **squads** 👥
 - You can fill a **Cell** ⛓️ with members of same squads
 - Prisoners in **courtyard** 🚶 can be mixed from all squads.
 - But in courtyard, they can't be watched..
 \n
-Have fun ! """
+"""
 )
-
 st.divider()
 
 st.write(
     "Deep dive using tabs on the left, read more about following my blog"
-    "post available [here](https://emilien-foissotte.github.io/fr/posts/2023/10/genetic-algorithm/?utm_campaign=GAWebApp)"
+    "post available [here](https://emilien-foissotte.github.io/fr/posts/"
+    "2023/10/genetic-algorithm/?utm_campaign=GAWebApp)"
 )
+
+st.write("It's on you, don't disappoint Big Brother..")
+st.image("pages/img/courtyard.png")
 
 if "loaded" not in st.session_state:
     state_generator(session_state=st.session_state)

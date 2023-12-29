@@ -1,10 +1,14 @@
 import time
 from copy import deepcopy
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
-from toolkit import matIndividual, problem, prettydf, state_generator
+from toolkit import matIndividual, prettydf, problem
+
+st.set_page_config(
+    page_title="🧬 Algorithms",
+)
 
 
 def click_button():

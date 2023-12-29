@@ -1,11 +1,9 @@
-from copy import deepcopy
 import random
 import time
-from datetime import datetime
+from copy import deepcopy
 
 import numpy as np
 import numpy.random as rand
-
 
 startTime = time.time()
 
@@ -13,21 +11,28 @@ rng = rand.default_rng()
 
 problem = {
     "compatibility": {
-        "C1": ["S1", "S3"],
-        "C2": ["S3", "S4"],
-        "C3": ["S2", "S4"],
-        "C4": ["S1", "S4"],
-        "courtyard": ["S1", "S2", "S3"],
+        "C0": ["S0", "S2"],
+        "C1": ["S2", "S3"],
+        "C2": ["S1", "S3"],
+        "C3": ["S0", "S3"],
+        "courtyard": ["S0", "S1", "S2"],
     },
-    "capacity": {"C1": 3, "C2": 4, "C3": 4, "C4": 6, "courtyard": 1000},
-    "arrest": {"S1": 5, "S2": 8, "S3": 6, "S4": 6},
-    "squads": ["S1", "S2", "S3", "S4"],
-    "cells": ["C1", "C2", "C3", "C4", "courtyard"],
+    "capacity": {"C0": 3, "C1": 4, "C2": 4, "C3": 6, "courtyard": 1000},
+    "arrest": {"S0": 5, "S1": 8, "S2": 6, "S3": 6},
+    "squads": ["S0", "S1", "S2", "S3"],
+    "cells": ["C0", "C1", "C2", "C3", "courtyard"],
 }
 
 
 class matIndividual:
     def __init__(self, problem):
+        """
+        Instanciate an individual.
+
+        Args:
+            problem: Problem dictionnary representing all constrains
+        """
+
         # loading all problems elements
         self.compatibility = deepcopy(problem["compatibility"])
         self.capacity = deepcopy(problem["capacity"])
@@ -69,6 +74,17 @@ class matIndividual:
         self.state[self.cell2indice["courtyard"]] = courtyard_line
 
     def mutate(self, rate_amount, rate_prop):
+        """
+        Create a mutated individual from this base individual.
+
+        Args:
+            rate_amount: Apply a percentage of amount of value to increase the amount of change in cells population
+            rate_prop: Apply a percentage of coverage of cell that might be mutated
+
+        Returns:
+           A mutated individual
+
+        """
         # move out or move in some prisoners with courtyard
         # rate_amout change the amout of prisoners than can be exchanged
         # rate prop is the amount of cells that are choosen randomely for modification
@@ -85,7 +101,10 @@ class matIndividual:
 
             choices = ["in", "out", "reset_choice"]
 
-            if random.choice(["in", "out"]) == "out":
+            choice = random.choice(choices)
+            logs.append(f"Mutation cell {cell} containing squad {squad} - event {choice}")
+
+            if choice == "out":
                 # print(f"move out from cell {cell}, squad {squad}, amount {amout_in_cell}/{self.capacity[cell]}, courtyard {amount_in_courtyard}")
                 # move out matter from cell to courtyard
                 left_courtyard_capa = int(self.capacity["courtyard"]) - int(
@@ -106,7 +125,7 @@ class matIndividual:
                 logs.append(
                     f"Moving out {qty_to_move_out} of squad {squad} from cell {cell} to courtyard"
                 )
-            else:
+            elif choice == "in":
                 # move in matter from courtyard to cell
                 left_cell_capa = (
                     self.capacity[cell] - self.state[self.cell2indice[cell]].sum()
@@ -128,9 +147,62 @@ class matIndividual:
                 logs.append(
                     f"Moving in {qty_to_move_in} of squad {squad} from courtyard to cell {cell}"
                 )
+            elif choice == "reset_choice":
+                # move out all matter from cell to courtyard, and take in from other squad in courtyard
+                # first, move out all prisoners to courtyard
+                left_courtyard_capa = int(self.capacity["courtyard"]) - int(
+                    self.state[self.cell2indice["courtyard"]].sum()
+                )
+                if left_courtyard_capa >= amount_in_cell:
+                    qty_to_move_out = int(amount_in_cell)
+                    self.state[self.cell2indice[cell]][
+                        self.squad2indice[squad]
+                    ] -= qty_to_move_out
+                    self.state[self.cell2indice["courtyard"]][
+                        self.squad2indice[squad]
+                    ] += qty_to_move_out
+                    logs.append(
+                        f"Reset out, Moving out {qty_to_move_out} of squad {squad} from cell {cell} to courtyard"
+                    )
+                # check if compatibility squads have elements in courtyard
+                compatible_squads = deepcopy(self.compatibility[cell])
+                compatible_squads.remove(squad)
+                if len(compatible_squads) > 0 :
+                    new_squad = random.choice(compatible_squads)
+                    squad = new_squad
+                    self.cell2choice[cell] = squad
+                    # move in some data if possible
+                    left_cell_capa = self.capacity[cell]
+                    amount_in_courtyard = self.state[self.cell2indice["courtyard"]][
+                        self.squad2indice[squad]
+                    ]
+                    max_amount = min(amount_in_courtyard, left_cell_capa)
+                    min_amount = 0
+                    qty_to_move_in = random.randint(
+                        min_amount, int(max_amount * rate_amount)
+                    )
+                    self.state[self.cell2indice["courtyard"]][
+                        self.squad2indice[new_squad]
+                    ] -= qty_to_move_in
+                    self.state[self.cell2indice[cell]][
+                        self.squad2indice[squad]
+                    ] += qty_to_move_in
+                    logs.append(
+                        f"Reset in, Moving in {qty_to_move_in} of squad {squad} from courtyard to cell {cell}"
+                    )
+            logs.append(" -- ")
         return logs
 
     def crossover(self, mixinInd, rate_prop):
+        """
+        Create a crossover individual, based on object and other parent.
+        Args:
+            mixinInd: Other individual to mix in to create the child individual
+            rate_prop: Percentage to apply to increase the chance that individual get mixed up
+
+        Returns:
+           An individual resulting from the crossover
+        """
         # to crossover features between cells, take randomely a cell
         # from one individual and the other cell from mix in individual
         rand_cell_list = deepcopy(list(self.cell_list[:-1]))
@@ -161,6 +233,9 @@ class matIndividual:
         return logs
 
     def evaluate(self):
+        """
+        Evaluate the individual and set it's fitness.
+        """
         # The objective function is the cell number of prisonners
         self.fitness = 0
         sum = self.state[self.cell2indice["courtyard"]].sum()
@@ -183,30 +258,46 @@ class matIndividual:
 
 class matPopulation:
     def __init__(
-        self, problem, size=100, rate_prop=0.5, rate_amount=1, tournament_size=3
+        self,
+        problem,
+        size=100,
+        rate_prop=0.5,
+        rate_amount=1,
     ):
+        """
+        Initialize a population object.
+
+        Args:
+            problem: problem dictionnary to solve
+            size: size of the population to generate
+            rate_prop: percentage of mutation rate in proportion to apply
+            rate_amount: percentage of mutation rate in amounts to apply
+        """
         # Create individuals
         self.individuals = []
         for i in range(size):
             self.individuals.append(matIndividual(problem=problem))
-            # print(f"created {i} individuals")
-            # print(f"generated in individual {i}")
         self.individuals = [matIndividual(problem=problem) for _ in range(size)]
         # Store the best individuals
         best = matIndividual(problem)
         best.evaluate()
         self.best = [best]
-        # Mutation rate
-        # self.base_rate = rate
+        # Mutation rates
         self.rate_prop = rate_prop
         self.rate_amount = rate_amount
 
     def sort(self):
+        """
+        Sort the individuals based on their fitness rates.
+        """
         self.individuals = sorted(
             self.individuals, key=lambda indi: indi.fitness, reverse=True
         )
 
     def enhance(self):
+        """
+        Enhance the population by making an iteration of selection, mutation, feature crossing.
+        """
         parents = []
 
         # add the 3 best
@@ -252,25 +343,54 @@ class matPopulation:
         self.sort()
         # Store the new best individual
         self.best.append(self.individuals[0])
-        # Increment the mutation rate if the population didn't change
-        # if self.best[-1].fitness == self.best[-2].fitness:
-        # self.rate += self.base_rate * 0.1
-        # else:
-        # self.rate = self.base_rate
 
     def evaluate(self):
+        """
+        Evaluate the individuals of the whole population.
+        """
         for indi in self.individuals:
             indi.evaluate()
 
 
 def prettydf(x):
+    """
+
+    Args:
+        x: Numerical value in the state
+
+    Returns:
+        Beautified version of cell population
+    """
     if x == 0:
         return ""
     else:
         return f"{x} 👤"
 
 
+def prettydf_compatibility(x):
+    """
+
+    Args:
+        x: Numerical value in the compatibility matrix
+
+    Returns:
+        Beautified version of cell compatibility with squad
+
+    """
+    if x == 0:
+        return ""
+    else:
+        return "✅"
+
+
 def state_generator(session_state):
+    """
+    Initialize the state of the application with mandatory states objetcts.
+
+    Args:
+        session_state: Streamlit internal state object
+
+    """
     for tracker in [
         "clicked_generation",
         "clicked_mutation",
@@ -303,12 +423,24 @@ def state_generator(session_state):
         case "mutated":
             session_state.individual_mutated = None
         case "generated_random_problem":
-            session_state.problem = None
+            session_state.problem = problem
 
     session_state.loaded = True
 
 
 def problem_generator(num_squads, num_cells, num_prisoners):
+    """
+    Generate a random problem.
+
+    Args:
+        num_squads: Number of squads to generate
+        num_cells: Number of cells to populate
+        num_prisoners: Approximate number of prisoners per squad
+
+    Returns:
+       Dictionary of the generated problem
+
+    """
     max_capa = max(int(1.25 * num_prisoners), 4)
 
     squads = [f"S{i}" for i in range(num_squads)]

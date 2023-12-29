@@ -1,10 +1,14 @@
 import time
 from copy import deepcopy
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
-from toolkit import matIndividual, problem, prettydf, state_generator
+from toolkit import matIndividual, prettydf, problem 
+
+st.set_page_config(
+    page_title="🧬 Algorithms",
+)
 
 
 def click_button():
@@ -28,7 +32,8 @@ def on_click_another_ind():
 with st.expander("Idea behind mutations 💡"):
     st.caption(
         "The general idea is to, with randomness, move prisoners from cell to courtyard or from"
-        "courtyard to cell, whenever it's possible"
+        "courtyard to cell, whenever it's possible. Eventually, we try also to reset a choice by moving"
+        " out all prisoners from a cell and replace them with some waiting in courtyard."
     )
 
 if "loaded" in st.session_state:

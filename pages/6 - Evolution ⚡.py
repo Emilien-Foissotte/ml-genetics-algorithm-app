@@ -1,11 +1,12 @@
-from toolkit import matPopulation, problem, prettydf
-
-import streamlit as st
-import pandas as pd
 import time
 
+import pandas as pd
+import streamlit as st
+
+from toolkit import matPopulation, prettydf, problem
+
 st.set_page_config(
-    page_title="Generation ⚙️",
+    page_title="🧬 Algorithms",
 )
 
 
@@ -20,19 +21,13 @@ def click_button_evolve():
         ingredients_fillings.sort()
         for i in range(15):
             ingredients_fillings.enhance()
-            if i > 4:
-                print(
-                    ingredients_fillings.best[-1],
-                    ingredients_fillings.best[-2],
-                    ingredients_fillings.best[-3],
-                )
             if ingredients_fillings.best[-1].fitness == st.session_state.max_capa:
                 break
             if (
-                i > 5
+                i > 6
                 and ingredients_fillings.best[-1].fitness
-                == ingredients_fillings.best[-2]
-                == ingredients_fillings.best[-3]
+                == ingredients_fillings.best[-2].fitness
+                == ingredients_fillings.best[-3].fitness
             ):
                 break
     st.session_state.max_iteration = i
@@ -74,8 +69,10 @@ if "loaded" in st.session_state:
                 on_click=click_button_generate,
                 disabled=st.session_state.generated,
             )
-        size = st.slider("Choose size of population", 1, 100, 100)
+        size = st.slider("Choose size of population", 1, 100, 50)
         st.session_state.size = size
+        mutation_rate = st.slider("Mutation rate proportion", 0, 100, 50)
+        st.session_state.mutation_rate = mutation_rate
 
     if (
         st.session_state.clicked_generation_evolution
@@ -83,7 +80,9 @@ if "loaded" in st.session_state:
     ):
         with st.spinner("Generating population.."):
             population = matPopulation(
-                problem=target_problem, size=st.session_state.size
+                problem=target_problem,
+                size=st.session_state.size,
+                rate_prop=st.session_state.mutation_rate / 100,
             )
             time.sleep(1)
             st.session_state.population = population
@@ -104,11 +103,19 @@ if "loaded" in st.session_state:
         fitness_values = [
             best_ind.fitness for best_ind in st.session_state.population.best
         ]
+        target_values = [
+            st.session_state.max_capa for best_ind in st.session_state.population.best
+        ]
+        charts = {
+            "iteration": range(len(fitness_values)),
+            "fitness_values": fitness_values,
+            "target_values": target_values,
+        }
 
-        chart_data = pd.DataFrame(data=fitness_values)
+        chart_data = pd.DataFrame(data=charts)
 
-        st.line_chart(data=chart_data)
-        with st.expander("Review best individuals"):
+        st.line_chart(data=chart_data, x="iteration", color=["#0000FF", "#FF0000"])
+        with st.expander("Review best individuals", expanded=True):
             ix = st.slider(
                 "Display best element of iteration",
                 0,
@@ -117,7 +124,7 @@ if "loaded" in st.session_state:
             data = st.session_state.population.best[ix].state.astype(int)
             columns = ("Squad %d" % i for i in range(data.shape[1]))
             index = ["Cell %d" % i for i in range(data.shape[0])]
-            index[-1] = "Warehouse"
+            index[-1] = "Courtyard"
             df = pd.DataFrame(data=data, columns=columns, index=index)
             df_pretty = df.map(lambda x: prettydf(x))
 
