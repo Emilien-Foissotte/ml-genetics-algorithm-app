@@ -112,19 +112,20 @@ class matIndividual:
                 )
                 max_amount = min(amount_in_cell, left_courtyard_capa)
                 min_amount = 0
-                qty_to_move_out = random.randint(
-                    min_amount, int(max_amount * rate_amount)
-                )
-                self.state[self.cell2indice[cell]][
-                    self.squad2indice[squad]
-                ] -= qty_to_move_out
-                self.state[self.cell2indice["courtyard"]][
-                    self.squad2indice[squad]
-                ] += qty_to_move_out
-                # print(f"Quantity to move {qty_to_move}")
-                logs.append(
-                    f"Moving out {qty_to_move_out} of squad {squad} from cell {cell} to courtyard"
-                )
+                if max_amount > min_amount:
+                    qty_to_move_out = random.randint(
+                        min_amount, int(max_amount * rate_amount)
+                    )
+                    self.state[self.cell2indice[cell]][
+                        self.squad2indice[squad]
+                    ] -= qty_to_move_out
+                    self.state[self.cell2indice["courtyard"]][
+                        self.squad2indice[squad]
+                    ] += qty_to_move_out
+                    # print(f"Quantity to move {qty_to_move}")
+                    logs.append(
+                        f"Moving out {qty_to_move_out} of squad {squad} from cell {cell} to courtyard"
+                    )
             elif choice == "in":
                 # move in matter from courtyard to cell
                 left_cell_capa = (
@@ -135,18 +136,19 @@ class matIndividual:
                 ]
                 max_amount = min(amount_in_courtyard, left_cell_capa)
                 min_amount = 0
-                qty_to_move_in = random.randint(
-                    min_amount, int(max_amount * rate_amount)
-                )
-                self.state[self.cell2indice["courtyard"]][
-                    self.squad2indice[squad]
-                ] -= qty_to_move_in
-                self.state[self.cell2indice[cell]][
-                    self.squad2indice[squad]
-                ] += qty_to_move_in
-                logs.append(
-                    f"Moving in {qty_to_move_in} of squad {squad} from courtyard to cell {cell}"
-                )
+                if max_amount > min_amount:
+                    qty_to_move_in = random.randint(
+                        min_amount, int(max_amount * rate_amount)
+                    )
+                    self.state[self.cell2indice["courtyard"]][
+                        self.squad2indice[squad]
+                    ] -= qty_to_move_in
+                    self.state[self.cell2indice[cell]][
+                        self.squad2indice[squad]
+                    ] += qty_to_move_in
+                    logs.append(
+                        f"Moving in {qty_to_move_in} of squad {squad} from courtyard to cell {cell}"
+                    )
             elif choice == "reset_choice":
                 # move out all matter from cell to courtyard, and take in from other squad in courtyard
                 # first, move out all prisoners to courtyard
