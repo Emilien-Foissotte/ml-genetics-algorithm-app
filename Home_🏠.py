@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import streamlit as st
 
 from toolkit import state_generator
@@ -10,7 +12,13 @@ def on_click_reset():
 st.set_page_config(
     page_title="🧬 Algorithms",
 )
-st.title("Demonstration of Genetics Algorithms")
+load_dotenv()
+"""
+# Demonstration of Genetics Algorithms
+
+[![Star](https://img.shields.io/github/stars/Emilien-Foissotte/ml-genetics-algorithm-app.svg?logo=github&style=social)](https://github.com/Emilien-Foissotte/ml-genetics-algorithm-app/stargazers)
+[![Follow](https://img.shields.io/github/followers/Emilien-Foissotte.svg?style=social)](https://github.com/Emilien-Foissotte)
+"""
 
 
 st.markdown(
@@ -45,3 +53,5 @@ else:
     col1, col2, col3 = st.columns(3)
     with col2:
         st.button("Reset experiments", on_click=on_click_reset)
+
+f"![](https://emilienfoissotte.goatcounter.com/count?p={os.getenv('TRACKING_NAME')})"
