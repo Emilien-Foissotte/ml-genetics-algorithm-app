@@ -1,0 +1,12 @@
+[project]
+name = "genetics-algorithm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11.6"
+dependencies = [
+    "numpy>=2.2.2",
+    "pandas>=2.2.3",
+    "python-dotenv>=1.0.1",
+    "streamlit>=1.41.1",
+]
