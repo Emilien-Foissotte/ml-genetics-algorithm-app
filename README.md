@@ -13,7 +13,7 @@
   <a href="https://github.com/emilien-foissotte/ml-genetics-algorithm-app/issues?q=is%3Aissue+is%3Aopen+label%3A%22ready+for+dev%22">
     <img src="https://img.shields.io/github/issues/emilien-foissotte/ml-genetics-algorithm-app/ready for dev" alt="GitHub issues ready for dev">
   </a>
-  <a href="https://ml-genetic-algorithms.streamlit.app/demo">
+  <a href="https://ml-genetic-algorithms.streamlit.app/">
     <img src="https://img.shields.io/badge/dashboard-live-blue?logo=python" alt="Dashboard badge">
   </a>
 </p>
