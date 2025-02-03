@@ -30,7 +30,7 @@ encodes an Open Source dashboard to showcase how Genetics Algorithms work on a s
 
 ## Table of Contents
 
-1. [What is this app?](#what-is-this-app)
+1. [What is this app about ?](#what-is-this-app-about-)
 2. [Developer notes](#developer-notes)
    1. [Environment management](#environment-management)
 3. [Contributing](#contributing)
