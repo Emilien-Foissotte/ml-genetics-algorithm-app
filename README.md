@@ -24,7 +24,7 @@ encodes an Open Source dashboard to showcase how Genetics Algorithms work on a s
 ## Try it now
 
 <p align="center">
-    <a href="https://ml-genetic-algorithms.streamlit.app/demo" target="_blank"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit" style="height: 60px !important;width: 217px !important;">
+    <a href="https://ml-genetic-algorithms.streamlit.app/" target="_blank"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit" style="height: 60px !important;width: 217px !important;">
     </a>
 </p>
 
